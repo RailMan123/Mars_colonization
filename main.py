@@ -82,8 +82,8 @@ class JobsForm(FlaskForm):
     job = StringField("Job")
     work_size = IntegerField('Work size', validators=[DataRequired()])
     collaborators = StringField("Collaborators")
-    is_finished = BooleanField("Is finished?", validators=[DataRequired()])
-    submit = SubmitField('ADD JOB')
+    is_finished = BooleanField("Is finished?")
+    submit = SubmitField('DO IT!')
 
 @app.route('/add_job',  methods=['GET', 'POST'])
 @login_required
@@ -102,6 +102,42 @@ def add_job():
         return redirect('/')
     return render_template('jobs.html', title='Добавление работы',
                            form=form)
+
+@app.route('/job/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_job(id):
+    form = JobsForm()
+    if request.method == "GET":
+        session = create_session()
+        jobs = session.query(Jobs).all()
+        cap = session.query(User).filter(User.id == 1).first()
+        for job in jobs:
+            if job.id == id and job.user == current_user or job.id == id and job.user == cap:
+                form.team_leader.data = job.team_leader
+                form.job.data = job.job
+                form.is_finished.data = job.is_finished
+                form.work_size.data = job.work_size
+                form.collaborators.data = job.collaborators
+                break
+
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        session = create_session()
+        jobs = session.query(Jobs).all()
+        cap = session.query(User).filter(User.id == 1).first()
+        for job in jobs:
+            if job.id == id and job.user == current_user or job.id == id and job.user == cap:
+                job.team_leader = form.team_leader.data
+                job.job = form.job.data
+                job.is_finished = form.is_finished.data
+                job.work_size = form.work_size.data
+                job.collaborators = form.collaborators.data
+                session.add(job)
+                session.commit()
+                return redirect('/')
+        abort(404)
+    return render_template('jobs.html', title='Редактирование работы', form=form)
 
 
 @app.route('/news',  methods=['GET', 'POST'])
