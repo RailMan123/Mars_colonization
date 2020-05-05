@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+    <div>
+        <a href="/add_department" class="btn btn-secondary">Add department</a>
+        <a href="/" class="btn btn-secondary">Back to jobs</a>
+    </div>
+{% endif %}
+<center>
+    <h3>List of Departments</h3>
+</center>
+{% for job in jobs%}
+<h3>Department # {{loop.index}}</h3>
+<table style="margin-left:40px;">
+    <tr bgcolor="#C8C9CA">
+        <th style="padding-right: 40px;">Title of department</th>
+        <th style="padding-right: 40px;">Chief</th>
+        <th style="padding-right: 40px;">Members</th>
+        <th style="padding-right: 40px;">Department Email</th>
+        <th style="padding-right: 40px;">Id of work</th>
+    </tr>
+    <tr bgcolor="#E6E6FA">
+        <td style="padding-right: 40px;">{{job.title}}</td>
+        <td style="padding-right: 40px;">{{job.user.name}} {{job.user.surname}}</td>
+        <td style="padding-right: 40px;">{{job.members}}</td>
+        <td style="padding-right: 40px;">{{job.email}}</td>
+        <td style="padding-right: 40px;">{{job.id}}</td>
+    </tr>
+</table>
+{% if current_user.is_authenticated and current_user == job.user or current_user.id == 1 %}
+    <div>
+        <a href="/department/{{ job.id }}" class="btn btn-warning">Edit department</a>
+        <a href="/department_delete/{{ job.id }}" class="btn btn-danger">Delete department</a>
+    </div>
+{% endif %}
+{% endfor %}
+{% endblock %}

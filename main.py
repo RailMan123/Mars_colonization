@@ -9,6 +9,7 @@ from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired
 
 from data.db_session import create_session, global_init
+from data.departments import Department
 from data.jobs import Jobs
 from data.users import User, News
 
@@ -85,6 +86,84 @@ class JobsForm(FlaskForm):
     is_finished = BooleanField("Is finished?")
     submit = SubmitField('DO IT!')
 
+class DepartmentForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired()])
+    chef = IntegerField('Team Leader', validators=[DataRequired()])
+    members = StringField("Members", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    submit = SubmitField('DO IT!')
+
+@app.route('/departments',  methods=['GET', 'POST'])
+@login_required
+def departments_show():
+    session = create_session()
+    jobs = session.query(Department).all()
+    return render_template("departments_table.html", jobs=jobs)
+
+@app.route('/add_department',  methods=['GET', 'POST'])
+@login_required
+def add_department():
+    form = DepartmentForm()
+    if form.validate_on_submit():
+        session = create_session()
+        Dep = Department()
+        Dep.chef = form.chef.data
+        Dep.title = form.title.data
+        Dep.members = form.members.data
+        Dep.email = form.email.data
+        session.add(Dep)
+        session.commit()
+        return redirect('/departments')
+    return render_template('department.html', title='Добавление департамента',
+                           form=form)
+
+@app.route('/department/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_department(id):
+    form = DepartmentForm()
+    if request.method == "GET":
+        session = create_session()
+        deps = session.query(Department).all()
+        a = False
+        for i in range(len(deps)):
+            if deps[i].id == id and deps[i].user == current_user or deps[i].id == id and current_user.id == 1:
+                form.title.data = deps[i].title
+                form.chef.data = deps[i].chef
+                form.members.data = deps[i].members
+                form.email.data = deps[i].email
+                a = True
+                break
+        if not a:
+            abort(404)
+    if form.validate_on_submit():
+        session = create_session()
+        deps = session.query(Department).all()
+        for i in range(len(deps)):
+            if deps[i].id == id and deps[i].user == current_user or deps[i].id == id and current_user.id == 1:
+                deps[i].title = form.title.data
+                deps[i].chef = form.chef.data
+                deps[i].members = form.members.data
+                deps[i].email = form.email.data
+                session.add(deps[i])
+                session.commit()
+                return redirect('/departments')
+            if i == len(deps) - 1:
+                abort(404)
+    return render_template('department.html', title='Редактирование департамента', form=form)
+
+@app.route('/department_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def department_delete(id):
+    session = create_session()
+    deps = session.query(Department).all()
+    for i in range(len(deps)):
+        if deps[i].id == id and deps[i].user == current_user or deps[i].id == id and current_user.id == 1:
+            session.delete(deps[i])
+            session.commit()
+            return redirect('/departments')
+        if i == len(deps) - 1:
+            abort(404)
+
 @app.route('/add_job',  methods=['GET', 'POST'])
 @login_required
 def add_job():
@@ -112,7 +191,6 @@ def edit_job(id):
         jobs = session.query(Jobs).all()
         a = False
         for i in range(len(jobs)):
-            print(jobs[i].id, jobs[i].user, current_user)
             if jobs[i].id == id and jobs[i].user == current_user or jobs[i].id == id and current_user.id == 1:
                 form.team_leader.data = jobs[i].team_leader
                 form.job.data = jobs[i].job
@@ -122,7 +200,6 @@ def edit_job(id):
                 a = True
                 break
         if not a:
-            print('dd')
             abort(404)
     if form.validate_on_submit():
         session = create_session()

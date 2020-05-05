@@ -8,11 +8,8 @@ class Department(SqlAlchemyBase):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    title = sqlalchemy.Column(sqlalchemy.String,
-                              index=True, unique=True)
-    chef = sqlalchemy.Column(sqlalchemy.Integer)
+    title = sqlalchemy.Column(sqlalchemy.String)
+    chef = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
     members = sqlalchemy.Column(sqlalchemy.String)
-    email = sqlalchemy.Column(sqlalchemy.String,
-                              index=True, unique=True)
+    email = sqlalchemy.Column(sqlalchemy.String)
     user = orm.relation('User')
-    jobs = orm.relation('Jobs')

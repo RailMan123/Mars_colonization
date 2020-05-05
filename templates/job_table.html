@@ -2,7 +2,10 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
-    <a href="/add_job" class="btn btn-secondary">Add job</a>
+    <div>
+        <a href="/add_job" class="btn btn-secondary">Add job</a>
+        <a href="/departments" class="btn btn-secondary">List of depatments</a>
+    </div>
 {% endif %}
 <center>
     <h3>Works log</h3>
