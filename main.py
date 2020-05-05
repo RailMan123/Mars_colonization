@@ -137,6 +137,18 @@ def edit_job(id):
                 abort(404)
     return render_template('jobs.html', title='Редактирование работы', form=form)
 
+@app.route('/job_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def job_delete(id):
+    session = create_session()
+    jobs = session.query(Jobs).all()
+    for i in range(len(jobs)):
+        if jobs[i].id == id and jobs[i].user == current_user or jobs[i].id == id and current_user.id == 1:
+            session.delete(jobs[i])
+            session.commit()
+            return redirect('/')
+        if i == len(jobs) - 1:
+            abort(404)
 
 @app.route('/news',  methods=['GET', 'POST'])
 @login_required

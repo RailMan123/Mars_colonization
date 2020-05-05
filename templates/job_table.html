@@ -13,6 +13,7 @@
         <th style="padding-right: 40px;">Duration</th>
         <th style="padding-right: 40px;">List of collaborators</th>
         <th>is finished</th>
+        <th>id of work</th>
     </tr>
     <tr bgcolor="#E6E6FA">
         <td style="padding-right: 40px;">{{job.job}}</td>
@@ -24,6 +25,7 @@
         {%else%}
         <td style="padding-right: 40px;" bgcolor="#FA8072">is not finished</td>
         {%endif%}
+        <td style="padding-right: 40px;">{{job.id}}</td>
     </tr>
 </table>
 {% endfor %}
