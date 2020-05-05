@@ -110,16 +110,20 @@ def edit_job(id):
     if request.method == "GET":
         session = create_session()
         jobs = session.query(Jobs).all()
+        a = False
         for i in range(len(jobs)):
+            print(jobs[i].id, jobs[i].user, current_user)
             if jobs[i].id == id and jobs[i].user == current_user or jobs[i].id == id and current_user.id == 1:
                 form.team_leader.data = jobs[i].team_leader
                 form.job.data = jobs[i].job
                 form.is_finished.data = jobs[i].is_finished
                 form.work_size.data = jobs[i].work_size
                 form.collaborators.data = jobs[i].collaborators
+                a = True
                 break
-            if i == len(jobs) - 1:
-                abort(404)
+        if not a:
+            print('dd')
+            abort(404)
     if form.validate_on_submit():
         session = create_session()
         jobs = session.query(Jobs).all()
