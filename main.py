@@ -110,33 +110,31 @@ def edit_job(id):
     if request.method == "GET":
         session = create_session()
         jobs = session.query(Jobs).all()
-        cap = session.query(User).filter(User.id == 1).first()
-        for job in jobs:
-            if job.id == id and job.user == current_user or job.id == id and job.user == cap:
-                form.team_leader.data = job.team_leader
-                form.job.data = job.job
-                form.is_finished.data = job.is_finished
-                form.work_size.data = job.work_size
-                form.collaborators.data = job.collaborators
+        for i in range(len(jobs)):
+            if jobs[i].id == id and jobs[i].user == current_user or jobs[i].id == id and current_user.id == 1:
+                form.team_leader.data = jobs[i].team_leader
+                form.job.data = jobs[i].job
+                form.is_finished.data = jobs[i].is_finished
+                form.work_size.data = jobs[i].work_size
+                form.collaborators.data = jobs[i].collaborators
                 break
-
-        else:
-            abort(404)
+            if i == len(jobs) - 1:
+                abort(404)
     if form.validate_on_submit():
         session = create_session()
         jobs = session.query(Jobs).all()
-        cap = session.query(User).filter(User.id == 1).first()
-        for job in jobs:
-            if job.id == id and job.user == current_user or job.id == id and job.user == cap:
-                job.team_leader = form.team_leader.data
-                job.job = form.job.data
-                job.is_finished = form.is_finished.data
-                job.work_size = form.work_size.data
-                job.collaborators = form.collaborators.data
-                session.add(job)
+        for i in range(len(jobs)):
+            if jobs[i].id == id and jobs[i].user == current_user or jobs[i].id == id and current_user.id == 1:
+                jobs[i].team_leader = form.team_leader.data
+                jobs[i].job = form.job.data
+                jobs[i].is_finished = form.is_finished.data
+                jobs[i].work_size = form.work_size.data
+                jobs[i].collaborators = form.collaborators.data
+                session.add(jobs[i])
                 session.commit()
                 return redirect('/')
-        abort(404)
+            if i == len(jobs) - 1:
+                abort(404)
     return render_template('jobs.html', title='Редактирование работы', form=form)
 
 
