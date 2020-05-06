@@ -8,7 +8,7 @@ from wtforms import PasswordField, StringField, TextAreaField, SubmitField, Bool
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired
 
-from api_files import news_api, jobs_api, users_api
+import news_api, jobs_api, users_api
 from data.db_session import create_session, global_init
 from data.departments import Department
 from data.jobs import Jobs
@@ -42,6 +42,7 @@ class RegisterForm(FlaskForm):
     position = StringField('Position', validators=[DataRequired()])
     speciality = StringField('Speciality', validators=[DataRequired()])
     address = StringField('Address', validators=[DataRequired()])
+    city_from = StringField('Hometown city', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -65,6 +66,7 @@ def reqister():
             position=form.position.data,
             speciality=form.speciality.data,
             address=form.address.data,
+            city_from=form.city_from.data
 
         )
         user.set_password(form.password.data)
