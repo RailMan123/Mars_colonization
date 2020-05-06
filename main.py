@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_login import login_user, LoginManager, login_manager, login_required, logout_user,\
     current_user
 from flask_restful import abort
@@ -8,6 +8,7 @@ from wtforms import PasswordField, StringField, TextAreaField, SubmitField, Bool
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired
 
+from api_files import news_api, jobs_api, users_api
 from data.db_session import create_session, global_init
 from data.departments import Department
 from data.jobs import Jobs
@@ -80,9 +81,9 @@ class LoginForm(FlaskForm):
 
 class JobsForm(FlaskForm):
     team_leader = IntegerField('Team Leader', validators=[DataRequired()])
-    job = StringField("Job")
+    job = StringField("Job", validators=[DataRequired()])
     work_size = IntegerField('Work size', validators=[DataRequired()])
-    collaborators = StringField("Collaborators")
+    collaborators = StringField("Collaborators", validators=[DataRequired()])
     is_finished = BooleanField("Is finished?")
     submit = SubmitField('DO IT!')
 
@@ -319,9 +320,17 @@ def logout():
     logout_user()
     return redirect("/")
 
+from flask import make_response
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 def main():
     global_init("db/blogs.sqlite")
+    app.register_blueprint(news_api.blueprint)
+    app.register_blueprint(jobs_api.blueprint)
+    app.register_blueprint(users_api.blueprint)
     app.run()
 
 

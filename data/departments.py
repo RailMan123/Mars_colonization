@@ -1,9 +1,11 @@
 import sqlalchemy
+from sqlalchemy_serializer import SerializerMixin
+
 from data.db_session import SqlAlchemyBase
 from sqlalchemy import orm
 
 
-class Department(SqlAlchemyBase):
+class Department(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'departments'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
