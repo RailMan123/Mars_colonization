@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from flask_login import login_user, LoginManager, login_manager, login_required, logout_user,\
     current_user
-from flask_restful import abort
+from flask_restful import reqparse, abort, Api, Resource
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
 from wtforms import PasswordField, StringField, TextAreaField, SubmitField, BooleanField, IntegerField
@@ -9,6 +9,8 @@ from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired
 
 import news_api, jobs_api, users_api
+import news_resources
+import users_resource
 from data.db_session import create_session, global_init
 from data.departments import Department
 from data.jobs import Jobs
@@ -16,6 +18,8 @@ from data.users import User, News
 
 
 app = Flask(__name__)
+api = Api(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 @login_manager.user_loader
@@ -322,17 +326,18 @@ def logout():
     logout_user()
     return redirect("/")
 
-from flask import make_response
-
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
 
 def main():
     global_init("db/blogs.sqlite")
     app.register_blueprint(news_api.blueprint)
     app.register_blueprint(jobs_api.blueprint)
     app.register_blueprint(users_api.blueprint)
+
+    api.add_resource(news_resources.NewsListResource, '/api/v2/news')
+    api.add_resource(news_resources.NewsResource, '/api/v2/news/<int:news_id>')
+
+    api.add_resource(users_resource.UsersListResource, '/api/v2/users')
+    api.add_resource(users_resource.UsersResource, '/api/v2/users/<int:user_id>')
     app.run()
 
 
