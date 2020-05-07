@@ -8,6 +8,7 @@ from wtforms import PasswordField, StringField, TextAreaField, SubmitField, Bool
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired
 
+import jobs_resource
 import news_api, jobs_api, users_api
 import news_resources
 import users_resource
@@ -338,6 +339,9 @@ def main():
 
     api.add_resource(users_resource.UsersListResource, '/api/v2/users')
     api.add_resource(users_resource.UsersResource, '/api/v2/users/<int:user_id>')
+
+    api.add_resource(jobs_resource.JobsListResource, '/api/v2/jobs')
+    api.add_resource(jobs_resource.JobsResource, '/api/v2/jobs/<int:job_id>')
     app.run()
 
 
