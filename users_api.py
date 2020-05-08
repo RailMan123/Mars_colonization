@@ -97,7 +97,7 @@ def redact_user(user_id):
         return jsonify({'error': 'Not found'})
 
 
-@blueprint.route('/api/delete_user/<int:user_id>', methods=['DELETE'])
+@blueprint.route('/api/delete_user/<int:user_id>', methods=['DELETE', 'GET'])
 def delete_user(user_id):
     session = db_session.create_session()
     user = session.query(User).get(user_id)

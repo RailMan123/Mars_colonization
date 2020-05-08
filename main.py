@@ -96,7 +96,7 @@ class JobsForm(FlaskForm):
 
 class DepartmentForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
-    chef = IntegerField('Team Leader', validators=[DataRequired()])
+    chef = IntegerField('Chief', validators=[DataRequired()])
     members = StringField("Members", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
     submit = SubmitField('DO IT!')

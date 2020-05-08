@@ -8,7 +8,7 @@ blueprint = flask.Blueprint('jobs_api', __name__,
                             template_folder='templates')
 
 
-@blueprint.route('/api/redact_job/<int:job_id>', methods=['POST'])
+@blueprint.route('/api/redact_job/<int:job_id>', methods=['POST', 'GET'])
 def redact_job(job_id):
     if not request.json:
         return jsonify({'error': 'Empty request'})
@@ -33,7 +33,7 @@ def redact_job(job_id):
         return jsonify({'error': 'Not found'})
 
 
-@blueprint.route('/api/delete_job/<int:job_id>', methods=['DELETE'])
+@blueprint.route('/api/delete_job/<int:job_id>', methods=['DELETE', 'GET'])
 def delete_job(job_id):
     session = db_session.create_session()
     job = session.query(Jobs).get(job_id)
