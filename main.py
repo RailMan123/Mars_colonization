@@ -110,9 +110,9 @@ def departments_show():
     for i in jobs:
         lead = session.query(User).get(i.chef)
         if lead:
-            jobs_leads.append((lead.name, lead.surname))
+            jobs_leads.append((lead.name, lead.surname, lead.id))
         else:
-            jobs_leads.append(('', ''))
+            jobs_leads.append((None, None, None))
     return render_template("departments_table.html", jobs=jobs, leads=jobs_leads)
 
 @app.route('/add_department',  methods=['GET', 'POST'])
@@ -142,7 +142,10 @@ def edit_department(id):
         deps = session.query(Department).all()
         a = False
         for i in range(len(deps)):
-            if deps[i].id == id and deps[i].user == current_user or deps[i].id == id and current_user.id == 1:
+            lead = session.query(User).get(deps[i].chef)
+            if deps[i].id == id and deps[i].user == current_user or\
+                    deps[i].id == id and current_user.id == 1 or\
+                deps[i].id == id and lead and lead.id == current_user.id:
                 form.title.data = deps[i].title
                 form.chef.data = deps[i].chef
                 form.members.data = deps[i].members
@@ -155,7 +158,10 @@ def edit_department(id):
         session = create_session()
         deps = session.query(Department).all()
         for i in range(len(deps)):
-            if deps[i].id == id and deps[i].user == current_user or deps[i].id == id and current_user.id == 1:
+            lead = session.query(User).get(deps[i].chef)
+            if deps[i].id == id and deps[i].user == current_user or\
+                    deps[i].id == id and current_user.id == 1 or \
+                    deps[i].id == id and lead and lead.id == current_user.id:
                 deps[i].title = form.title.data
                 deps[i].chef = form.chef.data
                 deps[i].members = form.members.data
@@ -173,7 +179,10 @@ def department_delete(id):
     session = create_session()
     deps = session.query(Department).all()
     for i in range(len(deps)):
-        if deps[i].id == id and deps[i].user == current_user or deps[i].id == id and current_user.id == 1:
+        lead = session.query(User).get(deps[i].chef)
+        if deps[i].id == id and deps[i].user == current_user or\
+                deps[i].id == id and current_user.id == 1 or \
+                deps[i].id == id and lead and lead.id == current_user.id:
             session.delete(deps[i])
             session.commit()
             return redirect('/departments')
@@ -208,7 +217,10 @@ def edit_job(id):
         jobs = session.query(Jobs).all()
         a = False
         for i in range(len(jobs)):
-            if jobs[i].id == id and jobs[i].user == current_user or jobs[i].id == id and current_user.id == 1:
+            lead = session.query(User).get(jobs[i].team_leader)
+            if jobs[i].id == id and jobs[i].user == current_user or\
+                    jobs[i].id == id and current_user.id == 1 or \
+                    jobs[i].id == id and lead and lead.id == current_user.id:
                 form.team_leader.data = jobs[i].team_leader
                 form.job.data = jobs[i].job
                 form.is_finished.data = jobs[i].is_finished
@@ -222,7 +234,10 @@ def edit_job(id):
         session = create_session()
         jobs = session.query(Jobs).all()
         for i in range(len(jobs)):
-            if jobs[i].id == id and jobs[i].user == current_user or jobs[i].id == id and current_user.id == 1:
+            lead = session.query(User).get(jobs[i].team_leader)
+            if jobs[i].id == id and jobs[i].user == current_user or\
+                    jobs[i].id == id and current_user.id == 1 or\
+                    jobs[i].id == id and lead and lead.id == current_user.id:
                 jobs[i].team_leader = form.team_leader.data
                 jobs[i].job = form.job.data
                 jobs[i].is_finished = form.is_finished.data
@@ -241,7 +256,10 @@ def job_delete(id):
     session = create_session()
     jobs = session.query(Jobs).all()
     for i in range(len(jobs)):
-        if jobs[i].id == id and jobs[i].user == current_user or jobs[i].id == id and current_user.id == 1:
+        lead = session.query(User).get(jobs[i].team_leader)
+        if jobs[i].id == id and jobs[i].user == current_user or\
+                jobs[i].id == id and current_user.id == 1 or \
+                jobs[i].id == id and lead and lead.id == current_user.id:
             session.delete(jobs[i])
             session.commit()
             return redirect('/')
@@ -332,9 +350,9 @@ def index():
     for i in jobs:
         lead = session.query(User).get(i.team_leader)
         if lead:
-            jobs_leads.append((lead.name, lead.surname))
+            jobs_leads.append((lead.name, lead.surname, lead.id))
         else:
-            jobs_leads.append(('', ''))
+            jobs_leads.append((None, None, None))
     return render_template("job_table.html", jobs=jobs, leads=jobs_leads)
 
 @app.route('/logout')

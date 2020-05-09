@@ -28,7 +28,7 @@
         <td style="padding-right: 40px;">{{job.id}}</td>
     </tr>
 </table>
-{% if current_user.is_authenticated and current_user == job.user or current_user.id == 1 %}
+{% if current_user.is_authenticated and current_user == job.user or current_user.id == 1 or current_user.id == leads[loop.index - 1][2]%}
     <div>
         <a href="/department/{{ job.id }}" class="btn btn-warning">Edit department</a>
         <a href="/department_delete/{{ job.id }}" class="btn btn-danger">Delete department</a>
