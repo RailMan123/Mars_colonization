@@ -106,7 +106,14 @@ class DepartmentForm(FlaskForm):
 def departments_show():
     session = create_session()
     jobs = session.query(Department).all()
-    return render_template("departments_table.html", jobs=jobs)
+    jobs_leads = []
+    for i in jobs:
+        lead = session.query(User).get(i.chef)
+        if lead:
+            jobs_leads.append((lead.name, lead.surname))
+        else:
+            jobs_leads.append(('', ''))
+    return render_template("departments_table.html", jobs=jobs, leads=jobs_leads)
 
 @app.route('/add_department',  methods=['GET', 'POST'])
 @login_required
@@ -115,6 +122,7 @@ def add_department():
     if form.validate_on_submit():
         session = create_session()
         Dep = Department()
+        Dep.author = current_user.id
         Dep.chef = form.chef.data
         Dep.title = form.title.data
         Dep.members = form.members.data
@@ -179,6 +187,7 @@ def add_job():
     if form.validate_on_submit():
         session = create_session()
         job = Jobs()
+        job.author = current_user.id
         job.team_leader = form.team_leader.data
         job.job = form.job.data
         job.is_finished = form.is_finished.data
@@ -319,7 +328,14 @@ def login():
 def index():
     session = create_session()
     jobs = session.query(Jobs).all()
-    return render_template("job_table.html", jobs=jobs)
+    jobs_leads = []
+    for i in jobs:
+        lead = session.query(User).get(i.team_leader)
+        if lead:
+            jobs_leads.append((lead.name, lead.surname))
+        else:
+            jobs_leads.append(('', ''))
+    return render_template("job_table.html", jobs=jobs, leads=jobs_leads)
 
 @app.route('/logout')
 @login_required

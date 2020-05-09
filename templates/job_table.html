@@ -23,7 +23,7 @@
     </tr>
     <tr bgcolor="#E6E6FA">
         <td style="padding-right: 40px;">{{job.job}}</td>
-        <td style="padding-right: 40px;">{{job.user.name}} {{job.user.surname}}</td>
+        <td style="padding-right: 40px;">{{leads[loop.index - 1][0]}} {{leads[loop.index - 1][1]}}</td>
         <td style="padding-right: 40px;">{{job.work_size}}</td>
         <td style="padding-right: 40px;">{{job.collaborators}}</td>
         {%if job.is_finished%}
